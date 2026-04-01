@@ -80,23 +80,48 @@
           <p class="sound-preview-lead">
             Try every sound in the app before downloading.
           </p>
-          <label class="sound-label" for="sound-select">Choose a sound</label>
-          <select id="sound-select" class="sound-select" name="sound">
-            <option value="assets/sounds/Fart 1.mp3">Fart 1</option>
-            <option value="assets/sounds/Fart 2.mp3">Fart 2</option>
-            <option value="assets/sounds/Fart 3.mp3">Fart 3</option>
-            <option value="assets/sounds/Fart 4.mp3">Fart 4</option>
-            <option value="assets/sounds/Moan 1.mp3">Moan 1</option>
-            <option value="assets/sounds/Moan 2.mp3">Moan 2</option>
-            <option value="assets/sounds/Ohoo 1.mp3">Ohoo</option>
-            <option value="assets/sounds/Old Metal.mp3">Old Metal</option>
-            <option value="assets/sounds/Ouch 1.mp3">Ouch 1</option>
-            <option value="assets/sounds/Ouch 2.mp3">Ouch 2</option>
-            <option value="assets/sounds/Ouch 3.mp3">Ouch 3</option>
-            <option value="assets/sounds/Ow 1.mp3">Ow</option>
-            <option value="assets/sounds/Yeah 1.mp3">Yeah 1</option>
-            <option value="assets/sounds/Yeah 2.mp3">Yeah 2</option>
-          </select>
+          <label class="sound-label" id="sound-label-picker" for="sound-picker-btn">Choose a sound</label>
+          <div class="sound-picker">
+            <button
+              type="button"
+              id="sound-picker-btn"
+              class="sound-picker-trigger"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-controls="sound-picker-listbox"
+            >
+              <span class="sound-picker-value" id="sound-picker-value">Fart 1</span>
+            </button>
+            <ul
+              id="sound-picker-listbox"
+              class="sound-picker-list"
+              role="listbox"
+              aria-labelledby="sound-label-picker"
+              hidden
+            ></ul>
+            <select
+              id="sound-select"
+              class="sound-select-native"
+              name="sound"
+              tabindex="-1"
+              aria-hidden="true"
+            >
+              <option value="assets/sounds/Fart 1.mp3">Fart 1</option>
+              <option value="assets/sounds/Fart 2.mp3">Fart 2</option>
+              <option value="assets/sounds/Fart 3.mp3">Fart 3</option>
+              <option value="assets/sounds/Fart 4.mp3">Fart 4</option>
+              <option value="assets/sounds/Moan 1.mp3">Moan 1</option>
+              <option value="assets/sounds/Moan 2.mp3">Moan 2</option>
+              <option value="assets/sounds/Ohoo 1.mp3">Ohoo</option>
+              <option value="assets/sounds/Old Metal.mp3">Old Metal</option>
+              <option value="assets/sounds/Ouch 1.mp3">Ouch 1</option>
+              <option value="assets/sounds/Ouch 2.mp3">Ouch 2</option>
+              <option value="assets/sounds/Ouch 3.mp3">Ouch 3</option>
+              <option value="assets/sounds/Ow 1.mp3">Ow</option>
+              <option value="assets/sounds/Yeah 1.mp3">Yeah 1</option>
+              <option value="assets/sounds/Yeah 2.mp3">Yeah 2</option>
+            </select>
+          </div>
           <div class="sound-player-card">
             <button type="button" id="sound-play-toggle" class="sound-play-btn" aria-label="Play selected sound">
               ▶
@@ -171,10 +196,15 @@
     </div>
     <script>
       const soundSelect = document.getElementById("sound-select");
+      const soundPickerBtn = document.getElementById("sound-picker-btn");
+      const soundPickerValue = document.getElementById("sound-picker-value");
+      const soundListbox = document.getElementById("sound-picker-listbox");
       const audio = document.getElementById("sound-preview-audio");
       const playToggle = document.getElementById("sound-play-toggle");
       const soundTitle = document.getElementById("sound-title");
       const soundHelp = document.getElementById("sound-help");
+
+      let docCloseListener = null;
 
       function selectedLabel() {
         return soundSelect.options[soundSelect.selectedIndex].text;
@@ -188,14 +218,111 @@
         );
       }
 
-      soundSelect.addEventListener("change", () => {
+      function syncListboxSelection() {
+        const i = soundSelect.selectedIndex;
+        soundListbox.querySelectorAll('[role="option"]').forEach((el, idx) => {
+          el.setAttribute("aria-selected", idx === i ? "true" : "false");
+        });
+      }
+
+      function applySoundSelection() {
         audio.src = soundSelect.value;
+        soundPickerValue.textContent = selectedLabel();
         soundTitle.textContent = selectedLabel();
         soundHelp.textContent = "Tap play to preview this clip.";
         audio.pause();
         audio.currentTime = 0;
         updateButton(false);
+        syncListboxSelection();
+      }
+
+      function closeSoundPicker() {
+        soundListbox.hidden = true;
+        soundPickerBtn.setAttribute("aria-expanded", "false");
+        if (docCloseListener) {
+          document.removeEventListener("click", docCloseListener);
+          docCloseListener = null;
+        }
+      }
+
+      function openSoundPicker() {
+        soundListbox.hidden = false;
+        soundPickerBtn.setAttribute("aria-expanded", "true");
+        syncListboxSelection();
+        const focusIdx = soundSelect.selectedIndex;
+        const toFocus = soundListbox.children[focusIdx] || soundListbox.firstElementChild;
+        toFocus?.focus();
+        docCloseListener = (e) => {
+          if (!e.target.closest(".sound-picker")) {
+            closeSoundPicker();
+          }
+        };
+        setTimeout(() => document.addEventListener("click", docCloseListener), 0);
+      }
+
+      Array.from(soundSelect.options).forEach((opt, index) => {
+        const li = document.createElement("li");
+        li.setAttribute("role", "option");
+        li.id = "sound-opt-" + index;
+        li.tabIndex = -1;
+        li.dataset.index = String(index);
+        li.textContent = opt.textContent;
+        li.addEventListener("click", (e) => {
+          e.stopPropagation();
+          soundSelect.selectedIndex = index;
+          applySoundSelection();
+          closeSoundPicker();
+          soundPickerBtn.focus();
+        });
+        soundListbox.appendChild(li);
       });
+
+      soundPickerBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (soundListbox.hidden) {
+          openSoundPicker();
+        } else {
+          closeSoundPicker();
+        }
+      });
+
+      soundPickerBtn.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (soundListbox.hidden) {
+            openSoundPicker();
+          }
+        }
+      });
+
+      soundListbox.addEventListener("keydown", (e) => {
+        const items = [...soundListbox.querySelectorAll('[role="option"]')];
+        const cur = items.indexOf(document.activeElement);
+        if (e.key === "Escape") {
+          e.preventDefault();
+          closeSoundPicker();
+          soundPickerBtn.focus();
+        }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          items[Math.min(cur + 1, items.length - 1)]?.focus();
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          items[Math.max(cur - 1, 0)]?.focus();
+        }
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (cur >= 0) {
+            soundSelect.selectedIndex = cur;
+            applySoundSelection();
+            closeSoundPicker();
+            soundPickerBtn.focus();
+          }
+        }
+      });
+
+      applySoundSelection();
 
       playToggle.addEventListener("click", async () => {
         if (audio.paused) {
