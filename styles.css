@@ -253,7 +253,10 @@ body {
   width: 100%;
   margin: 0 0 1rem;
   padding: 0.7rem 2.5rem 0.7rem 0.85rem;
-  font: inherit;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.45;
+  font-weight: 400;
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -264,6 +267,11 @@ body {
   background-repeat: no-repeat;
   background-position: right 0.9rem center;
   background-size: 14px 10px;
+}
+
+.sound-select option {
+  font-family: var(--font-body);
+  font-size: 1rem;
 }
 
 .sound-select:focus-visible {
