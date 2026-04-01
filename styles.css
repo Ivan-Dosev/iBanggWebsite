@@ -451,13 +451,54 @@ a:hover {
   border-left: 4px solid var(--accent);
 }
 
-.summary-card p {
+.summary-card-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.98rem;
+  color: var(--muted);
+}
+
+.summary-card-summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary-chevron {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1.1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--accent-dark);
+  transition: transform 0.2s ease;
+}
+
+.summary-card[open] .summary-chevron {
+  transform: rotate(90deg);
+}
+
+.summary-card-heading strong {
+  color: var(--text);
+}
+
+.summary-card-panel {
+  margin: 0.85rem 0 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--line);
+}
+
+.summary-card-panel p {
   margin: 0;
   color: var(--muted);
   font-size: 0.98rem;
 }
 
-.summary-card strong {
+.summary-card-panel strong {
   color: var(--text);
 }
 
