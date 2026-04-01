@@ -348,22 +348,16 @@ body {
   margin-top: 1.25rem;
 }
 
-.sound-video-label {
-  margin: 0 0 0.55rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
 .sound-video-embed {
   position: relative;
   width: 100%;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #0d0d0d;
+  max-width: 100%;
   aspect-ratio: 16 / 9;
-  box-shadow: var(--shadow-soft);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #111;
   border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
 }
 
 .sound-video-embed iframe {
