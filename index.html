@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="theme-color" content="#d4eedc" />
     <meta
       name="description"
@@ -135,7 +136,7 @@
           <div class="sound-video-wrap">
             <div class="sound-video-embed">
               <iframe
-                src="https://www.youtube.com/embed/eyi1hRgVilk"
+                id="sound-youtube-frame"
                 title="iBangg — YouTube video"
                 loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -215,6 +216,20 @@
       const playToggle = document.getElementById("sound-play-toggle");
       const soundTitle = document.getElementById("sound-title");
       const soundHelp = document.getElementById("sound-help");
+      const soundYoutubeFrame = document.getElementById("sound-youtube-frame");
+
+      if (soundYoutubeFrame) {
+        const ytParams = new URLSearchParams({
+          rel: "0",
+          modestbranding: "1",
+          playsinline: "1"
+        });
+        if (location.protocol === "https:" || location.protocol === "http:") {
+          ytParams.set("origin", location.origin);
+        }
+        soundYoutubeFrame.src =
+          "https://www.youtube-nocookie.com/embed/eyi1hRgVilk?" + ytParams.toString();
+      }
 
       let docCloseListener = null;
 
