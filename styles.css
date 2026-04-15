@@ -296,7 +296,7 @@ body {
   margin: 0;
   padding: 0.35rem 0;
   list-style: none;
-  max-height: min(50vh, 17rem);
+  max-height: min(60vh, 22rem);
   overflow-y: auto;
   font-family: var(--font-body);
   font-size: 1.05rem;

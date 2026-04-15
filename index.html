@@ -375,6 +375,12 @@
         updateButton(false);
         soundHelp.textContent = "Preview finished.";
       });
+
+      audio.addEventListener("error", () => {
+        updateButton(false);
+        soundHelp.textContent =
+          "Could not load this sound (missing file or still updating). Try a hard refresh, or check the Network tab for the .mp3 URL.";
+      });
     </script>
   </body>
 </html>
